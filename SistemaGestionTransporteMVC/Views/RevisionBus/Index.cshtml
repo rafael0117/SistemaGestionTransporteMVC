@@ -1,0 +1,59 @@
+﻿@model IEnumerable<SistemaGestionTransporteMVC.Models.RevisionBus>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdRevision)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaRevision)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoRevision)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Resultado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Observaciones)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdRevision)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaRevision)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoRevision)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Resultado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Observaciones)
+            </td>
+            <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.IdRevision }) |
+                @Html.ActionLink("Details", "Details", new { id = item.IdRevision }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.IdRevision })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
