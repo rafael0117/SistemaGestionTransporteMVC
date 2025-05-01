@@ -16,10 +16,10 @@
                 @Html.DisplayNameFor(model => model.IdDestino)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Nombre)
+                @Html.DisplayNameFor(model => model.nombre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Imagen)
+                @Html.DisplayNameFor(model => model.imagen)
             </th>
             <th></th>
         </tr>
@@ -31,10 +31,14 @@
                 @Html.DisplayFor(modelItem => item.IdDestino)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
+                @Html.DisplayFor(modelItem => item.nombre)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Imagen)
+                @if (!string.IsNullOrEmpty(item.imagen)) {
+                    <img src="@item.imagen" alt="@item.nombre" style="width:100px; height:auto;" />
+                } else {
+                    <span>No Image</span>
+                }
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.IdDestino }) |

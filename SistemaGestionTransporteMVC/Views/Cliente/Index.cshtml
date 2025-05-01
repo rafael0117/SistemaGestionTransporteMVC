@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- Jumbotron Header -->
+<header class="jumbotron my-4">
+    <h1 class="display-3">Bienvenido a Spring Ecommerce 2021</h1>
+    <p class="lead">Tu tienda de productos en Línea</p>
+</header>
+
+<!-- Page Features -->
+<!-- Page Features -->
+<div class="row text-center">
+    @foreach (var destino in Model)
+    {
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+                <img class="card-img-top" src="@destino.imagen" alt="@destino.nombre" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <p class="card-text">@destino.nombre</p>
+                </div>
+                <div class="card-footer">
+                    <!-- Redirigir a IndexViaje pasando el idDestino -->
+                    <a href="@Url.Action("IndexViaje", "Cliente", new { idDestino = destino.IdDestino})" class="btn btn-success">Ver viajes</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SistemaGestionTransporteMVC.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using static System.Net.WebRequestMethods;
 
 namespace SistemaGestionTransporteMVC.Controllers
 {
@@ -42,26 +45,50 @@ namespace SistemaGestionTransporteMVC.Controllers
             return View(await Task.Run(() => destino));
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            return View(await Task.Run(() => new Destino()));
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Destino reg)
+        public async Task<IActionResult> Create(Destino destino)
         {
-            string mensaje = "";
+            // Validamos si se ha seleccionado una imagen
+            if (destino.ImagenUrl == null || destino.ImagenUrl.Length == 0)
+            {
+                ModelState.AddModelError("ImagenUrl", "Debe seleccionar una imagen.");
+                return View(destino);
+            }
+
+            // Procedemos con la carga de la imagen
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(reg), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync("insertDestino", content);
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                mensaje = apiResponse;
+                using (var form = new MultipartFormDataContent())
+                {
+                    // Agregamos otros campos al formulario
+                    form.Add(new StringContent(destino.nombre), "nombre");
+
+                    // Agregamos el archivo de la imagen
+                    var fileContent = new StreamContent(destino.ImagenUrl.OpenReadStream());
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(destino.ImagenUrl.ContentType);
+                    form.Add(fileContent, "imagen", destino.ImagenUrl.FileName);
+
+                    // Enviamos la solicitud HTTP
+                    HttpResponseMessage response = await client.PostAsync("insertDestino", form);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    // En caso de error, mostramos el mensaje
+                    ViewBag.Error = await response.Content.ReadAsStringAsync();
+                    return View(destino);
+                }
             }
-            ViewBag.mensaje = mensaje;
-            return View(await Task.Run(() => reg));
         }
+
+
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -77,20 +104,60 @@ namespace SistemaGestionTransporteMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Destino reg)
+        public async Task<IActionResult> Edit(Destino reg, IFormFile imagen)
         {
-            string mensaje = "";
+            // Validamos si se ha seleccionado una imagen
+            if (imagen != null && imagen.Length > 0)
+            {
+                // Validar tipo de archivo
+                string extension = Path.GetExtension(imagen.FileName).ToLowerInvariant();
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("Imagen", "El archivo debe ser una imagen (.jpg, .jpeg, .png, .gif)");
+                    return View(reg);
+                }
+
+                // Límite de tamaño (5MB)
+                if (imagen.Length > 5 * 1024 * 1024)
+                {
+                    ModelState.AddModelError("Imagen", "La imagen no puede exceder 5MB");
+                    return View(reg);
+                }
+            }
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
-                StringContent content = new StringContent(JsonConvert.SerializeObject(reg), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PutAsync("updateDestino", content);
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                mensaje = apiResponse;
+                using (var form = new MultipartFormDataContent())
+                {
+                    // Agregamos otros campos al formulario
+                    form.Add(new StringContent(reg.nombre), "nombre");
+
+                    // Si se seleccionó una nueva imagen, la agregamos al formulario
+                    if (imagen != null && imagen.Length > 0)
+                    {
+                        var fileContent = new StreamContent(imagen.OpenReadStream());
+                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(imagen.ContentType);
+                        form.Add(fileContent, "imagen", imagen.FileName);
+                    }
+
+                    // Enviamos la solicitud HTTP PUT
+                    HttpResponseMessage response = await client.PutAsync($"updateDestino/{reg.IdDestino}", form);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    // En caso de error, mostramos el mensaje
+                    ViewBag.Error = await response.Content.ReadAsStringAsync();
+                    return View(reg);
+                }
             }
-            ViewBag.mensaje = mensaje;
-            return View(await Task.Run(() => reg));
         }
+
+
 
         public async Task<IActionResult> Delete(int id)
         {

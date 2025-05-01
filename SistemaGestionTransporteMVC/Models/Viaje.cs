@@ -9,5 +9,9 @@
         public DateTime FechaLlegada { get; set; }
         public string Incidencias { get; set; }
         public double Precio { get; set; }
+
+        // Propiedad de navegación
+        public Destino Destino { get; set; }
     }
+
 }

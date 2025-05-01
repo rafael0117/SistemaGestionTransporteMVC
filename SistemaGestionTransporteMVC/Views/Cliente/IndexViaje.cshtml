@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "IndexViaje";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<header class="jumbotron my-4">
+    <h1 class="display-3">Viajes disponibles</h1>
+    <p class="lead">Elige tu próximo destino con CIVA</p>
+</header>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="row">
+        @foreach (var viaje in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <!-- Mostrar imagen del viaje si tienes una propiedad directa en Viaje -->
+                  
+                    <div class="card-body">
+                        <h5 class="card-title">Viaje #@viaje.IdViaje</h5>  <!-- Título solo con el ID del viaje -->
+                        <p class="card-text">
+                            <strong>Fecha de Salida:</strong> @viaje.FechaSalida.ToShortDateString() <br />
+                            <strong>Fecha de Llegada:</strong> @viaje.FechaLlegada.ToShortDateString() <br />
+                            <strong>Precio:</strong> S/ @viaje.Precio
+                        </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="#" class="btn btn-primary">Reservar</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No hay viajes disponibles.</p>
+}
