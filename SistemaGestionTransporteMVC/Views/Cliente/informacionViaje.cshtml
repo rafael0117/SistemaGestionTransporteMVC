@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewData["Title"] = "informacionViaje";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+
+<div class="container">
+    <!-- Título y Breadcrumb -->
+    <h1 class="mt-4 mb-3">
+        CIVA <small>Detalles del Viaje</small>
+    </h1>
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+        <li class="breadcrumb-item active">Viaje</li>
+    </ol>
+
+    <!-- Detalle del viaje -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <!-- Imagen del viaje -->
+                <div class="col-lg-6">
+                    <a href="#">
+                        <img class="img-fluid rounded"
+                             src="" alt="Imagen del viaje"
+                             onerror="this.src='/img/default.jpg';" />
+                    </a>
+                </div>
+
+                <!-- Información del viaje -->
+                <div class="col-lg-6">
+                    <form asp-controller="Carrito" asp-action="Agregar" method="post">
+                        <h2 class="card-title">Viaje #@Model.IdViaje</h2>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <h5>Precio: S/ @Model.Precio</h5>
+                            </li>
+                            <li class="list-group-item">
+                                <p><strong>Salida:</strong> @Model.FechaSalida.ToString("dd/MM/yyyy hh:mm tt")</p>
+                                <p><strong>Llegada:</strong> @Model.FechaLlegada.ToString("dd/MM/yyyy hh:mm tt")</p>
+                            </li>
+                            <li class="list-group-item">
+                                <h6>
+                                    Cantidad:
+                                    <input type="number" id="cantidad" name="cantidad" autocomplete="off"
+                                           min="1" max="5" value="1" class="form-control w-50 d-inline-block" />
+                                </h6>
+                            </li>
+                        </ul>
+
+                        <!-- Pasar el ID del viaje oculto -->
+                        <input type="hidden" name="idViaje" value="@Model.IdViaje" />
+
+                        <button type="submit" class="btn btn-dark mt-3">Reservar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

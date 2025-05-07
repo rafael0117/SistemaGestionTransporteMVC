@@ -90,6 +90,7 @@ namespace SistemaGestionTransporteMVC.Controllers
 
 
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             Destino destino = new Destino();
@@ -100,29 +101,27 @@ namespace SistemaGestionTransporteMVC.Controllers
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 destino = JsonConvert.DeserializeObject<Destino>(apiResponse);
             }
-            return View(await Task.Run(() => destino));
+            return View(destino);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Destino reg, IFormFile imagen)
+        public async Task<IActionResult> Edit(Destino reg, IFormFile ImagenUrl)
         {
             // Validamos si se ha seleccionado una imagen
-            if (imagen != null && imagen.Length > 0)
+            if (ImagenUrl != null && ImagenUrl.Length > 0)
             {
-                // Validar tipo de archivo
-                string extension = Path.GetExtension(imagen.FileName).ToLowerInvariant();
+                string extension = Path.GetExtension(ImagenUrl.FileName).ToLowerInvariant();
                 string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
 
                 if (!allowedExtensions.Contains(extension))
                 {
-                    ModelState.AddModelError("Imagen", "El archivo debe ser una imagen (.jpg, .jpeg, .png, .gif)");
+                    ModelState.AddModelError("ImagenUrl", "El archivo debe ser una imagen válida");
                     return View(reg);
                 }
 
-                // Límite de tamaño (5MB)
-                if (imagen.Length > 5 * 1024 * 1024)
+                if (ImagenUrl.Length > 5 * 1024 * 1024)
                 {
-                    ModelState.AddModelError("Imagen", "La imagen no puede exceder 5MB");
+                    ModelState.AddModelError("ImagenUrl", "La imagen no puede exceder 5MB");
                     return View(reg);
                 }
             }
@@ -132,25 +131,19 @@ namespace SistemaGestionTransporteMVC.Controllers
                 client.BaseAddress = new Uri(apiUrl);
                 using (var form = new MultipartFormDataContent())
                 {
-                    // Agregamos otros campos al formulario
                     form.Add(new StringContent(reg.nombre), "nombre");
 
-                    // Si se seleccionó una nueva imagen, la agregamos al formulario
-                    if (imagen != null && imagen.Length > 0)
+                    if (ImagenUrl != null && ImagenUrl.Length > 0)
                     {
-                        var fileContent = new StreamContent(imagen.OpenReadStream());
-                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(imagen.ContentType);
-                        form.Add(fileContent, "imagen", imagen.FileName);
+                        var fileContent = new StreamContent(ImagenUrl.OpenReadStream());
+                        fileContent.Headers.ContentType = new MediaTypeHeaderValue(ImagenUrl.ContentType);
+                        form.Add(fileContent, "imagen", ImagenUrl.FileName);
                     }
 
-                    // Enviamos la solicitud HTTP PUT
                     HttpResponseMessage response = await client.PutAsync($"updateDestino/{reg.IdDestino}", form);
                     if (response.IsSuccessStatusCode)
-                    {
                         return RedirectToAction("Index");
-                    }
 
-                    // En caso de error, mostramos el mensaje
                     ViewBag.Error = await response.Content.ReadAsStringAsync();
                     return View(reg);
                 }

@@ -60,6 +60,20 @@ namespace SistemaGestionTransporteMVC.Controllers
             return View(viajes);
         }
 
+        public async Task<IActionResult> informacionViaje(int id)
+        {
+            Viaje viaje = new Viaje();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrlViaje);
+                HttpResponseMessage response = await client.GetAsync($"getViaje/{id}"); // Asegúrate que la API tenga esta ruta
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                viaje = JsonConvert.DeserializeObject<Viaje>(apiResponse);
+            }
+
+            return View(viaje);
+        }
 
     }
 }

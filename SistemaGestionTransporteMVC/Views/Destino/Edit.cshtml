@@ -1,42 +1,49 @@
 ﻿@model SistemaGestionTransporteMVC.Models.Destino
 
-@{
-    ViewData["Title"] = "Edit";
-}
 
-<h1>Edit</h1>
+<h1>Editar destino</h1>
 
 <h4>Destino</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div class="col-md-6">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdDestino" class="control-label"></label>
-                <input asp-for="IdDestino" class="form-control" />
-                <span asp-validation-for="IdDestino" class="text-danger"></span>
-            </div>
+
+            <!-- Campo oculto para el ID -->
+            <input asp-for="IdDestino" type="hidden" />
+
+            <!-- Campo para nombre -->
             <div class="form-group">
                 <label asp-for="nombre" class="control-label"></label>
                 <input asp-for="nombre" class="form-control" />
                 <span asp-validation-for="nombre" class="text-danger"></span>
             </div>
+
+            <!-- Mostrar imagen actual -->
             <div class="form-group">
-                <label asp-for="imagen" class="control-label"></label>
-                <input asp-for="imagen" class="form-control" />
-                <span asp-validation-for="imagen" class="text-danger"></span>
+                <label class="control-label">Imagen actual</label>
+                <br />
+                <img src="@Model.ImagenUrl" alt="Imagen del destino" style="max-width: 200px;" />
             </div>
+
+            <!-- Subir nueva imagen -->
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="ImagenUrl" class="control-label">Nueva imagen (opcional)</label>
+                <input asp-for="ImagenUrl" type="file" class="form-control" />
+                <span asp-validation-for="ImagenUrl" class="text-danger"></span>
+            </div>
+
+            <!-- Botón Guardar -->
+            <div class="form-group mt-3">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Volver</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a class="btn btn-primary" asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
