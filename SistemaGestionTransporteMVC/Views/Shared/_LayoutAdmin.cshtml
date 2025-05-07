@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -226,7 +225,7 @@
         <!-- End Navbar -->
         <div class="container-fluid py-4">
             <div>
-             
+                <h1>tityij</h1>
             </div>
             <footer class="footer py-4">
                 <div class="container-fluid">
@@ -314,7 +313,13 @@
     <script src="~/js/plugins/smooth-scrollbar.min.js"></script>
     <script src="~/js/plugins/chartjs.min.js"></script>
 
-     
+        var win = navigator.platform.indexOf('Win') > -1;
+        if (win && document.querySelector('#sidenav-scrollbar')) {
+          var options = {
+            damping: '0.5'
+          }
+          Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+        }
     </script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
