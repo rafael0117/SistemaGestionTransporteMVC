@@ -94,43 +94,103 @@ namespace SistemaGestionTransporteMVC.Controllers
 
         public async Task<IActionResult> Create()
         {
-            List<Bus> buses = new List<Bus>();
-            List<Destino> destinos = new List<Destino>();
+            Viaje reg = new Viaje();
 
+            // Cargar lista de buses
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("https://localhost:7252/api/");
+                HttpResponseMessage response = await client.GetAsync("BusAPI/getBuses");
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                var buses = JsonConvert.DeserializeObject<List<Bus>>(apiResponse);
 
-                var responseBuses = await client.GetAsync("BusAPI/getBuses");
-                var dataBuses = await responseBuses.Content.ReadAsStringAsync();
-                buses = JsonConvert.DeserializeObject<List<Bus>>(dataBuses);
-
-                var responseDestinos = await client.GetAsync("DestinoAPI/getDestinos");
-                var dataDestinos = await responseDestinos.Content.ReadAsStringAsync();
-                destinos = JsonConvert.DeserializeObject<List<Destino>>(dataDestinos);
+                ViewBag.Buses = buses.Select(b =>
+                    new SelectListItem
+                    {
+                        Value = b.IdBus.ToString(),
+                        Text = b.Modelo
+                    }).ToList();
             }
 
-            ViewBag.Buses = buses;
-            ViewBag.Destinos = destinos;
+            // Cargar lista de destinos
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:7252/api/");
+                HttpResponseMessage response = await client.GetAsync("DestinoAPI/getDestinos");
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                var destinos = JsonConvert.DeserializeObject<List<Destino>>(apiResponse);
 
-            return View(new Viaje());
+                ViewBag.Destinos = destinos.Select(d =>
+                    new SelectListItem
+                    {
+                        Value = d.IdDestino.ToString(),
+                        Text = d.nombre
+                    }).ToList();
+            }
+
+            return View(reg);
         }
-
         [HttpPost]
         public async Task<IActionResult> Create(Viaje reg)
         {
             string mensaje = "";
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://localhost:7252/api/ViajeAPI/");
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(reg), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync("insertViaje", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        mensaje = "Viaje registrado con éxito.";
+                        return RedirectToAction("Index"); // o donde desees redirigir
+                    }
+                    else
+                    {
+                        mensaje = $"Error al registrar el viaje. Código de error: {response.StatusCode}";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                mensaje = $"Ocurrió un error al intentar registrar el viaje: {ex.Message}";
+            }
+
+            // Si ocurre error, recargar listas
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:7252/api/ViajeAPI");
-                StringContent content = new StringContent(JsonConvert.SerializeObject(reg), Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await client.PostAsync("insertViaje", content);
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                mensaje = apiResponse;
+                client.BaseAddress = new Uri("https://localhost:7252/api/");
+                HttpResponseMessage responseBuses = await client.GetAsync("BusAPI/getBuses");
+                string dataBuses = await responseBuses.Content.ReadAsStringAsync();
+                var buses = JsonConvert.DeserializeObject<List<Bus>>(dataBuses);
+
+                ViewBag.Buses = buses.Select(b =>
+                    new SelectListItem
+                    {
+                        Value = b.IdBus.ToString(),
+                        Text = b.Modelo
+                    }).ToList();
+
+                HttpResponseMessage responseDestinos = await client.GetAsync("DestinoAPI/getDestinos");
+                string dataDestinos = await responseDestinos.Content.ReadAsStringAsync();
+                var destinos = JsonConvert.DeserializeObject<List<Destino>>(dataDestinos);
+
+                ViewBag.Destinos = destinos.Select(d =>
+                    new SelectListItem
+                    {
+                        Value = d.IdDestino.ToString(),
+                        Text = d.nombre
+                    }).ToList();
             }
+
             ViewBag.mensaje = mensaje;
-            return View(await Task.Run(() => reg));
+            return View(reg);
         }
+
+
 
         public async Task<IActionResult> Edit(int id)
         {
