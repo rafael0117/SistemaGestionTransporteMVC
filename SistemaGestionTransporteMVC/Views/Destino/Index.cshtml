@@ -60,9 +60,12 @@
                                         <a href="@Url.Action("Details", new {id = item.IdDestino})" class="btn btn-success" role="button">
                                             <i class="bi bi-info-circle"></i> Detalle
                                         </a>
-                                        <a href="@Url.Action("Delete", new {id = item.IdDestino})" class="btn btn-danger" role="button">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </a>
+                                        <form id="delete-form-@item.IdDestino" asp-action="DeleteConfirmed" asp-controller="Destino" asp-route-id="@item.IdDestino" method="post" class="d-inline">
+                                            <button type="button" class="btn btn-danger" onclick="confirmarEliminacionDestino(@item.IdDestino)">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+
                                     </td>
                                 </tr>
                             }
@@ -79,3 +82,23 @@
 <script src="js/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
 <script src="js/datatables-simple-demo.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarEliminacionDestino(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción eliminará el destino.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${id}`).submit();
+            }
+        });
+    }
+</script>
+

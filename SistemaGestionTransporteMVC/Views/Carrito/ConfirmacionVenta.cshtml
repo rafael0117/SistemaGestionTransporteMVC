@@ -55,5 +55,11 @@ else
 {
     <p class="text-warning">No hay detalles de pasajes registrados.</p>
 }
+<div class="mt-3">
+    <a class="btn btn-primary" href="@Url.Action("Index", "Home")">Volver al Inicio</a>
 
-<a class="btn btn-primary mt-3" href="@Url.Action("Index", "Home")">Volver al Inicio</a>
+    @* Botón para generar PDF *@
+    <a class="btn btn-danger ms-2" href="@Url.Action("GenerarPDF", "Carrito", new { id = Model.IdVenta })" target="_blank">
+        Generar PDF
+    </a>
+</div>

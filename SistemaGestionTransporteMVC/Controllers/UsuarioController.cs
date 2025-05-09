@@ -124,6 +124,16 @@ namespace SistemaGestionTransporteMVC.Controllers
             }
         }
 
+        public IActionResult Logout()
+        {
+            // Limpiar toda la sesión
+            HttpContext.Session.Clear();
+
+            // Redirigir al login o al inicio público
+            return RedirectToAction("Login", "Usuario");
+        }
+
+
 
     }
 }

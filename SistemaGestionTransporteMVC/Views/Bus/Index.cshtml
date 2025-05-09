@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
@@ -70,9 +71,12 @@
                                         <a href="@Url.Action("Details", new {id = item.IdBus})" class="btn btn-success" role="button">
                                             <i class="bi bi-info-circle"></i> Detalle
                                         </a>
-                                        <a href="@Url.Action("Delete", new {id = item.IdBus})" class="btn btn-danger" role="button">
-                                            <i class="bi bi-trash"></i> Eliminar
-                                        </a>
+                                        <form id="delete-form-@item.IdBus" asp-action="DeleteConfirmed" asp-controller="Bus" asp-route-id="@item.IdBus" method="post" class="d-inline">
+                                            <button type="button" class="btn btn-danger" onclick="confirmarEliminacion(@item.IdBus)">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+
                                     </td>
                                 </tr>
                             }
@@ -88,3 +92,22 @@
 <script src="js/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
 <script src="js/datatables-simple-demo.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarEliminacion(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "No podrás deshacer esto.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-form-${id}`).submit();
+            }
+        });
+    }
+</script>

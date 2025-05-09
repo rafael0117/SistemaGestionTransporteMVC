@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Rotativa.AspNetCore;
 using SistemaGestionTransporteMVC.Models;
 using SistemaGestionTransporteMVC.Utils;
 
@@ -214,6 +215,14 @@ namespace SistemaGestionTransporteMVC.Controllers
             }
 
             return View(venta);
+        }
+        public IActionResult GenerarPDF() {
+            DateTime hoy = DateTime.Now;
+            return new ViewAsPdf() { 
+                FileName =$"facturas-{hoy}.pdf",
+                PageOrientation=Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize=Rotativa.AspNetCore.Options.Size.A4
+            };
         }
 
 
