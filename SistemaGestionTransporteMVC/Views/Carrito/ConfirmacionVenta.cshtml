@@ -1,0 +1,59 @@
+﻿@model VentaPasaje
+@{
+    ViewData["Title"] = "ConfirmacionVenta";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+
+
+
+<h2 class="text-success">✅ Venta generada correctamente</h2>
+
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        Detalles de la Venta
+    </div>
+    <div class="card-body">
+        <p><strong>Código de Venta:</strong> @Model.IdVenta</p>
+        <p><strong>Número de Venta:</strong> @Model.Numero</p>
+        <p><strong>Fecha:</strong> @Model.FechaVenta.ToString("dd/MM/yyyy HH:mm")</p>
+        <p><strong>Estado:</strong> @Model.Estado</p>
+        <p><strong>Total:</strong> S/ @Model.Total.ToString("F2")</p>
+    </div>
+</div>
+
+@if (Model.Detalles != null && Model.Detalles.Any())
+{
+    <div class="mt-4">
+        <h4>Pasajes</h4>
+        <table class="table table-bordered">
+            <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>ID Viaje</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Detalles.Count; i++)
+                {
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@Model.Detalles[i].IdViaje</td>
+                        <td>@Model.Detalles[i].Cantidad</td>
+                        <td>S/ @Model.Detalles[i].Precio.ToString("F2")</td>
+                        <td>S/ @Model.Detalles[i].Total.ToString("F2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-warning">No hay detalles de pasajes registrados.</p>
+}
+
+<a class="btn btn-primary mt-3" href="@Url.Action("Index", "Home")">Volver al Inicio</a>

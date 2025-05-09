@@ -1,0 +1,43 @@
+﻿
+
+@model List<SistemaGestionTransporteMVC.Models.CarritoItem>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<h2>Carrito de Compras</h2>
+
+@if (!Model.Any())
+{
+    <p>Tu carrito está vacío.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Destino</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(item.nombreDestino ?? "Destino no disponible")</td>
+                    <td>@item.Cantidad</td>
+                    <td>S/ @item.Precio</td>
+                    <td>S/ @item.Subtotal</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Total: S/ @ViewBag.Total</h4>
+
+    <a asp-action="ResumenOrden" class="btn btn-primary">Resumen de Orden</a>
+    <a asp-action="Vaciar" class="btn btn-danger">Vaciar Carrito</a>
+}

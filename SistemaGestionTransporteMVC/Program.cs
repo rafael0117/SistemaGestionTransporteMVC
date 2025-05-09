@@ -1,27 +1,42 @@
-var builder = WebApplication.CreateBuilder(args);
+using SistemaGestionTransporteMVC.Controllers;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole(); // Muestra los errores en la consola
+builder.Logging.AddDebug();   // Muestra los errores en el depurador
+
+// Agregar servicios para las sesiones **antes de construir la aplicación**
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de expiración de la sesión
+    options.Cookie.HttpOnly = true; // Solo accesible por el servidor
+    options.Cookie.IsEssential = true; // Asegura que la cookie sea esencial
+});
+
+builder.Services.AddHttpClient<ViajeController>();
+
+// Agregar servicios al contenedor
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurar el pipeline de solicitudes
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
+// Usar las sesiones antes de enrutamiento
+app.UseSession();
 
+app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Cliente}/{action=Index}/{id?}");
 
 app.Run();

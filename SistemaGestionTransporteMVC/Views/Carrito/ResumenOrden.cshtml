@@ -1,0 +1,54 @@
+﻿@model List<SistemaGestionTransporteMVC.Models.CarritoItem>
+@{
+    ViewData["Title"] = "Resumen de Orden";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<h2>Resumen de tu Orden</h2>
+
+<!-- Mostrar mensaje de éxito si existe -->
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
+<!-- Mostrar mensaje de error si existe -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (!Model.Any())
+{
+    <p>Tu carrito está vacío.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Destino</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.nombreDestino</td>
+                    <td>@item.Cantidad</td>
+                    <td>S/ @item.Precio</td>
+                    <td>S/ @item.Subtotal</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h4>Total a Pagar: <strong>S/ @ViewBag.Total</strong></h4>
+
+    <form asp-action="GenerarVenta" method="post">
+        <button type="submit" class="btn btn-success">Generar Venta</button>
+    </form>
+}
