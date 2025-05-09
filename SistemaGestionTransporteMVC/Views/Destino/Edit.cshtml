@@ -1,50 +1,52 @@
 ﻿@model SistemaGestionTransporteMVC.Models.Destino
 
+<div class="container my-5">
+    <div class="card shadow-lg border-0 bg-dark text-white">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Editar Destino</h2>
+        </div>
+        <div class="card-body">
+            <h4>Destino</h4>
+            <hr />
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-<h1>Editar destino</h1>
+                <!-- Campo oculto para el ID -->
+                <input asp-for="IdDestino" type="hidden" />
 
-<h4>Destino</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <!-- Campo para nombre -->
+                <div class="form-group">
+                    <label asp-for="nombre" class="control-label text-light"></label>
+                    <input asp-for="nombre" class="form-control" />
+                    <span asp-validation-for="nombre" class="text-danger"></span>
+                </div>
 
-            <!-- Campo oculto para el ID -->
-            <input asp-for="IdDestino" type="hidden" />
+                <!-- Mostrar imagen actual -->
+                <div class="form-group">
+                    <label class="control-label text-light">Imagen actual</label>
+                    <br />
+                    <img src="@Model.ImagenUrl" alt="Imagen del destino" style="max-width: 200px;" class="img-fluid rounded" />
+                </div>
 
-            <!-- Campo para nombre -->
-            <div class="form-group">
-                <label asp-for="nombre" class="control-label"></label>
-                <input asp-for="nombre" class="form-control" />
-                <span asp-validation-for="nombre" class="text-danger"></span>
-            </div>
+                <!-- Subir nueva imagen -->
+                <div class="form-group">
+                    <label asp-for="ImagenUrl" class="control-label text-light">Nueva imagen (opcional)</label>
+                    <input asp-for="ImagenUrl" type="file" class="form-control" />
+                    <span asp-validation-for="ImagenUrl" class="text-danger"></span>
+                </div>
 
-            <!-- Mostrar imagen actual -->
-            <div class="form-group">
-                <label class="control-label">Imagen actual</label>
-                <br />
-                <img src="@Model.ImagenUrl" alt="Imagen del destino" style="max-width: 200px;" />
-            </div>
-
-            <!-- Subir nueva imagen -->
-            <div class="form-group">
-                <label asp-for="ImagenUrl" class="control-label">Nueva imagen (opcional)</label>
-                <input asp-for="ImagenUrl" type="file" class="form-control" />
-                <span asp-validation-for="ImagenUrl" class="text-danger"></span>
-            </div>
-
-            <!-- Botón Guardar -->
-            <div class="form-group mt-3">
-                <input type="submit" value="Guardar" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Volver</a>
-            </div>
-        </form>
+                <!-- Botón Guardar -->
+                <div class="form-group mt-3">
+                    <input type="submit" value="Guardar" class="btn btn-success" />
+                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -4,48 +4,77 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdDestino)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.imagen)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdDestino)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.nombre)
-            </td>
-            <td>
-                @if (!string.IsNullOrEmpty(item.imagen)) {
-                    <img src="@item.imagen" alt="@item.nombre" style="width:100px; height:auto;" />
-                } else {
-                    <span>No Image</span>
-                }
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.IdDestino }) |
-                @Html.ActionLink("Details", "Details", new { id = item.IdDestino }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.IdDestino })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4 shadow-lg p-2 ab-3 text-center">Lista de Destinos</h1>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <a type="button" class="btn btn-info btn-sm" asp-action="Create">
+                        <i class="bi bi-file-earmark-plus fs-5"></i> Agregar Destino
+                    </a>
+                    <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.IdDestino)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.nombre)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.imagen)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.IdDestino)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.nombre)
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.imagen))
+                                        {
+                                            <img src="@item.imagen" alt="@item.nombre" style="width:100px; height:auto;" />
+                                        }
+                                        else
+                                        {
+                                            <span>No Image</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", new {id = item.IdDestino})" class="btn btn-warning" role="button">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </a>
+                                        <a href="@Url.Action("Details", new {id = item.IdDestino})" class="btn btn-success" role="button">
+                                            <i class="bi bi-info-circle"></i> Detalle
+                                        </a>
+                                        <a href="@Url.Action("Delete", new {id = item.IdDestino})" class="btn btn-danger" role="button">
+                                            <i class="bi bi-trash"></i> Eliminar
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="js/scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+<script src="js/datatables-simple-demo.js"></script>

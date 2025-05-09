@@ -1,34 +1,38 @@
 ﻿@model SistemaGestionTransporteMVC.Models.Destino
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Crear";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container my-5">
+    <div class="card shadow-lg border-0 bg-dark text-white">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Crear Destino</h2>
+        </div>
+        <div class="card-body">
+            <h4>Destino</h4>
+            <hr />
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label asp-for="nombre" class="text-light"></label>
+                    <input asp-for="nombre" class="form-control" />
+                    <span asp-validation-for="nombre" class="text-danger"></span>
+                </div>
 
-<h4>Destino</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label asp-for="nombre"></label>
-                <input asp-for="nombre" class="form-control" />
-                <span asp-validation-for="nombre" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label class="text-light">Imagen</label>
+                    <input asp-for="ImagenUrl" type="file" class="form-control" />
+                    <span class="text-danger">@ViewBag.Error</span>
+                </div>
 
-            <div class="form-group">
-                <label>Imagen</label>
-                <input asp-for="ImagenUrl" type="file" class="form-control" />
-                <span class="text-danger">@ViewBag.Error</span>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Guardar</button>
-        </form>
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer bg-dark text-center">
+            <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>

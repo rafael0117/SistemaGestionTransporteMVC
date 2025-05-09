@@ -3,7 +3,7 @@
     public class Viaje
     {
         public int IdViaje { get; set; }
-        public int IdBus { get; set; }
+        public int IdBus { get; set; }      
         public int IdDestino { get; set; }
         public DateTime FechaSalida { get; set; }
         public DateTime FechaLlegada { get; set; }
@@ -12,6 +12,8 @@
 
         // Propiedad de navegación
         public Destino Destino { get; set; }
+
+        public Bus Bus { get; set; }
     }
 
 }

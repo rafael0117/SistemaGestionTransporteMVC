@@ -4,57 +4,67 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="container my-5">
+    <div class="card shadow-lg border-0 bg-dark text-white">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Detalles del Viaje</h2>
+        </div>
+        <div class="card-body">
+            <h4>Viaje</h4>
+            <hr />
+            <dl class="row mt-4">
+                <dt class="col-sm-3 fw-bold text-light">
+                    @Html.DisplayNameFor(model => model.IdViaje)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="text-white">@Html.DisplayFor(model => model.IdViaje)</span>
+                </dd>
 
-<div>
-    <h4>Viaje</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdViaje)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdViaje)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdBus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdBus)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdDestino)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdDestino)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaSalida)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaSalida)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaLlegada)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaLlegada)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Incidencias)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Incidencias)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Precio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Precio)
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.IdViaje }) | <br />
-    <a class="btn btn-primary" asp-action="Index">Back to List</a>
+                <dt class="col-sm-3 fw-bold text-light">
+                    @Html.DisplayNameFor(model => model.Bus.Modelo)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="text-white">@Html.DisplayFor(model => model.Bus.Modelo)</span>
+                </dd>
+
+                <dt class="col-sm-3 fw-bold text-light">
+                    @Html.DisplayNameFor(model => model.Destino.nombre)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="text-white">@Html.DisplayFor(model => model.Destino.nombre)</span>
+                </dd>
+
+                <dt class="col-sm-3 fw-bold text-light">
+                    @Html.DisplayNameFor(model => model.FechaSalida)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="text-white">@Html.DisplayFor(model => model.FechaSalida)</span>
+                </dd>
+
+                <dt class="col-sm-3 fw-bold text-light">
+                    @Html.DisplayNameFor(model => model.FechaLlegada)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="text-white">@Html.DisplayFor(model => model.FechaLlegada)</span>
+                </dd>
+
+                <dt class="col-sm-3 fw-bold text-light">
+                    @Html.DisplayNameFor(model => model.Incidencias)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="text-white">@Html.DisplayFor(model => model.Incidencias)</span>
+                </dd>
+
+                <dt class="col-sm-3 fw-bold text-light">
+                    @Html.DisplayNameFor(model => model.Precio)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="text-white">@Html.DisplayFor(model => model.Precio)</span>
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a class="btn btn-secondary" asp-action="Index">Volver a la lista</a>
+        </div>
+    </div>
 </div>
