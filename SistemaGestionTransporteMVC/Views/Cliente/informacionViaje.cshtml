@@ -1,9 +1,7 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "informacionViaje";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
-
 
 <div class="container">
     <!-- Título y Breadcrumb -->
@@ -21,13 +19,9 @@
         <div class="card-body">
             <div class="row">
                 <!-- Imagen del viaje -->
-              
-
                 <!-- Información del viaje -->
                 <div class="col-lg-6">
-                 
-
-                    <form asp-controller="Carrito" asp-action="Agregar" method="post">
+                    <form asp-controller="Carrito" asp-action="Agregar" method="post" id="formReservar">
                         <div class="card">
                             <div class="card-body">
                                 <h2 class="card-title">Viaje #@Model.IdViaje</h2>
@@ -48,17 +42,63 @@
                                 </ul>
 
                                 <!-- ID del viaje oculto -->
-                                <input type="hidden" name="idViaje" value="@Model.IdViaje" />
+                                <input type="hidden" name="idViaje" value="@Model.IdViaje" id="idViaje" />
+
 
                                 <button type="submit" class="btn btn-dark mt-3">Reservar</button>
                             </div>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script>
+        document.getElementById("formReservar").addEventListener("submit", async function (e) {
+            e.preventDefault(); // Evita que el formulario se envíe normalmente
+
+            const idViaje = document.getElementById("idViaje").value;
+            const cantidad = document.getElementById("cantidad").value;
+
+            // Hacer el POST usando Fetch
+            const response = await fetch("/Carrito/Agregar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ idViaje: idViaje, cantidad: cantidad })
+            });
+
+            const result = await response.json();
+
+            // Si el usuario no está logueado
+            if (result.status === "not_logged_in") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Debe iniciar sesión',
+                    text: 'Necesita iniciar sesión para reservar un viaje.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ir a iniciar sesión',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/Usuario/Login'; // Redirige al login
+                    }
+                });
+            } else if (result.status === "success") {
+                // Si el viaje fue agregado con éxito
+                Swal.fire("¡Agregado!", result.message, "success").then(() => {
+                    window.location.href = "/Carrito/Index"; // Redirige al carrito
+                });
+            } else {
+                // Si hubo un error
+                Swal.fire("Error", result.message, "error");
+            }
+        });
+    </script>
+}

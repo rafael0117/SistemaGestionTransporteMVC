@@ -57,10 +57,20 @@ namespace SistemaGestionTransporteMVC.Controllers
                 HttpResponseMessage response = await client.PostAsync("insertBus", content);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 mensaje = apiResponse;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["mensaje"] = "¡Bus registrado exitosamente!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.mensaje = mensaje;
+                    return View(reg);
+                }
             }
-            ViewBag.mensaje = mensaje;
-            return View(await Task.Run(() => reg));
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {

@@ -1,0 +1,95 @@
+﻿@model VentaPasaje
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Comprobante de Venta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 40px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .datos {
+            margin-top: 20px;
+        }
+
+            .datos p {
+                margin: 5px 0;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #eee;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>COMPROBANTE DE VENTA</h2>
+
+    <div class="datos">
+        <p><strong>Número de Venta:</strong> @Model.Numero</p>
+        <p><strong>Fecha:</strong> @Model.FechaVenta.ToString("dd/MM/yyyy HH:mm")</p>
+        <p><strong>Estado:</strong> @Model.Estado</p>
+    </div>
+
+    @if (Model.Detalles != null && Model.Detalles.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ID Viaje</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Detalles.Count; i++)
+                {
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@Model.Detalles[i].IdViaje</td>
+                        <td>@Model.Detalles[i].Cantidad</td>
+                        <td>S/ @Model.Detalles[i].Precio.ToString("F2")</td>
+                        <td>S/ @Model.Detalles[i].Total.ToString("F2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <p class="total">Total: S/ @Model.Total.ToString("F2")</p>
+</body>
+</html>

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Rotativa.AspNetCore;
+using Rotativa.AspNetCore.Options;
 using SistemaGestionTransporteMVC.Models;
 using SistemaGestionTransporteMVC.Utils;
 
@@ -16,74 +19,89 @@ namespace SistemaGestionTransporteMVC.Controllers
             ViewBag.Total = carrito.Sum(x => x.Subtotal);
             return View(carrito);
         }
-
-        public async Task<IActionResult> Agregar(int idViaje, int cantidad)
+        [HttpPost]
+        public async Task<IActionResult> Agregar([FromBody] CarritoItem item)
         {
-            // Verificar sesión
             int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
             if (idUsuario == null)
             {
-                TempData["Error"] = "Debe iniciar sesión para agregar al carrito.";
-                return RedirectToAction("Login", "Usuario");
+                return Json(new { status = "not_logged_in" });
             }
 
             Viaje viaje = null;
             Destino destino = null;
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri("https://localhost:7252/api/");
-
-                // Obtener viaje
-                HttpResponseMessage responseViaje = await client.GetAsync($"ViajeAPI/getViaje/{idViaje}");
-                if (responseViaje.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
+                    client.BaseAddress = new Uri("https://localhost:7252/api/");
+
+                    // Obtener el viaje
+                    var responseViaje = await client.GetAsync($"ViajeAPI/getViaje/{item.IdViaje}");
+                    if (!responseViaje.IsSuccessStatusCode)
+                    {
+                        return Json(new { status = "error", message = "No se pudo obtener información del viaje." });
+                    }
+
                     string apiResponse = await responseViaje.Content.ReadAsStringAsync();
                     viaje = JsonConvert.DeserializeObject<Viaje>(apiResponse);
-                }
 
-                if (viaje != null)
-                {
-                    // Obtener destino del viaje
-                    HttpResponseMessage responseDestino = await client.GetAsync($"DestinoAPI/getDestino/{viaje.IdDestino}");
-                    if (responseDestino.IsSuccessStatusCode)
+                    if (viaje == null)
                     {
-                        string destinoResponse = await responseDestino.Content.ReadAsStringAsync();
-                        destino = JsonConvert.DeserializeObject<Destino>(destinoResponse);
+                        return Json(new { status = "error", message = "Viaje no encontrado." });
+                    }
+
+                    // Obtener el destino
+                    var responseDestino = await client.GetAsync($"DestinoAPI/getDestino/{viaje.IdDestino}");
+                    if (!responseDestino.IsSuccessStatusCode)
+                    {
+                        return Json(new { status = "error", message = "No se pudo obtener información del destino." });
+                    }
+
+                    string destinoResponse = await responseDestino.Content.ReadAsStringAsync();
+                    destino = JsonConvert.DeserializeObject<Destino>(destinoResponse);
+
+                    if (destino == null)
+                    {
+                        return Json(new { status = "error", message = "Destino no encontrado." });
                     }
                 }
-            }
 
-            if (viaje == null || destino == null)
-            {
-                TempData["Error"] = "No se pudo agregar el viaje. Datos incompletos.";
-                return RedirectToAction("Index");
-            }
+                // Obtener el carrito actual o inicializar uno nuevo
+                var carrito = HttpContext.Session.GetObjectFromJson<List<CarritoItem>>(SessionKey) ?? new List<CarritoItem>();
 
-            // Obtener carrito actual
-            var carrito = HttpContext.Session.GetObjectFromJson<List<CarritoItem>>(SessionKey) ?? new List<CarritoItem>();
-
-            var existente = carrito.FirstOrDefault(x => x.IdViaje == idViaje);
-            if (existente != null)
-            {
-                existente.Cantidad += cantidad;
-            }
-            else
-            {
-                carrito.Add(new CarritoItem
+                // Buscar si el viaje ya existe en el carrito
+                var existente = carrito.FirstOrDefault(x => x.IdViaje == item.IdViaje);
+                if (existente != null)
                 {
-                    IdViaje = viaje.IdViaje,
-                    IdDestino = viaje.IdDestino,
-                    nombreDestino = destino.nombre,
-                    Precio = viaje.Precio,
-                    Cantidad = cantidad
-                });
+                    existente.Cantidad += item.Cantidad;
+                }
+                else
+                {
+                    carrito.Add(new CarritoItem
+                    {
+                        IdViaje = viaje.IdViaje,
+                        IdDestino = viaje.IdDestino,
+                        nombreDestino = destino.nombre,
+                        Precio = viaje.Precio,
+                        Cantidad = item.Cantidad
+                    });
+                }
+
+                // Guardar en sesión
+                HttpContext.Session.SetObjectAsJson(SessionKey, carrito);
+
+                return Json(new { status = "success", message = "El viaje se ha agregado al carrito." });
             }
-
-            HttpContext.Session.SetObjectAsJson(SessionKey, carrito);
-
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                // Manejo de errores inesperados
+                return Json(new { status = "error", message = "Ocurrió un error inesperado: " + ex.Message });
+            }
         }
+
+
 
         public IActionResult Confirmacion()
         {
@@ -214,16 +232,44 @@ namespace SistemaGestionTransporteMVC.Controllers
                 }
             }
 
-            return View(venta);
+            return View(venta); // Pasa los datos de la venta a la vista
         }
-        public IActionResult GenerarPDF() {
+
+        public async Task<IActionResult> GenerarPDF(int id)
+        {
+            VentaPasaje venta = null;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:7252/api/");
+                HttpResponseMessage response = await client.GetAsync($"VentaPasajeAPI/obtenerporid/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    venta = JsonConvert.DeserializeObject<VentaPasaje>(apiResponse);
+                }
+                else
+                {
+                    return NotFound("No se pudo generar el PDF: venta no encontrada.");
+                }
+            }
+
             DateTime hoy = DateTime.Now;
-            return new ViewAsPdf() { 
-                FileName =$"facturas-{hoy}.pdf",
-                PageOrientation=Rotativa.AspNetCore.Options.Orientation.Portrait,
-                PageSize=Rotativa.AspNetCore.Options.Size.A4
+
+            return new ViewAsPdf("GenerarPDF", venta)
+            {
+                FileName = $"factura-{hoy:yyyyMMddHHmmss}.pdf",
+                PageOrientation = Orientation.Portrait,
+                PageSize = Size.A4,
+                CustomSwitches = "--disable-smart-shrinking"
             };
         }
+
+
+
+
+
 
 
     }
